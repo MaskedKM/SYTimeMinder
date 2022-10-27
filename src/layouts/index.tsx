@@ -53,7 +53,6 @@ export default function Layout() {
     const tempP = Number(((1 - leakSec / 112500) * 100).toFixed(fixIndex));
     setProgress(tempP);
     setTime(`${hour}小时${min}分钟${sec}秒`);
-    console.log(leakSec);
   };
 
   setInterval(getNewTime, 1000);
