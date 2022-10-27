@@ -1,4 +1,4 @@
-import { Progress, Button } from "antd";
+import { Progress, Button, Modal } from "antd";
 import "antd/dist/antd.css";
 import { useEffect, useRef, useState } from "react";
 import styles from "./index.less";
@@ -19,6 +19,8 @@ export default function Layout() {
   const [progress, setProgress] = useState<number>();
   const [smile, setSmile] = useState<string>();
   const audioObj = useRef(new Audio());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPaused, setIsPaused] = useState(true);
 
   const getNewTime = () => {
     const weekDay = new Date().getDay();
@@ -93,11 +95,19 @@ export default function Layout() {
   setInterval(getNewTime, 1000);
 
   useEffect(() => {
-    const audioObj = new Audio('/loser.mp3')
-    audioObj.autoplay = true
-    audioObj.muted = true
-    audioObj.volume = 1
-    audioObj.play()
+    audioObj.current = new Audio("/loser.mp3");
+    audioObj.current.loop = true;
+    audioObj.current.autoplay = true;
+    const promise = audioObj.current.play();
+    if (promise !== undefined) {
+      promise
+        .then((_) => {
+          setIsPaused(false);
+        })
+        .catch((error) => {
+          setIsModalOpen(true);
+        });
+    }
   }, []);
 
   return (
@@ -122,10 +132,36 @@ export default function Layout() {
       <div>距离周末</div>
       <div className={styles.timeText}>{time}</div>
       <img
-        src={audioObj.current.paused ? PlayIcon : PauseIcon}
-        width={20}
-        height={20}
+        src={isPaused ? PlayIcon : PauseIcon}
+        width={50}
+        height={50}
+        onClick={() => {
+          if (audioObj.current.paused) {
+            audioObj.current.play();
+            setIsPaused(false);
+          } else {
+            audioObj.current.pause();
+            setIsPaused(true);
+          }
+        }}
+        style={{ cursor: "pointer" }}
+        className={styles.audioButton}
       />
+      <Modal
+        open={isModalOpen}
+        onOk={() => {
+          audioObj.current.play();
+          setIsPaused(false);
+          setIsModalOpen(false);
+        }}
+        onCancel={() => {
+          setIsPaused(true);
+          setIsModalOpen(false);
+        }}
+        title={"Confirm"}
+      >
+        Do you want to play automatically?
+      </Modal>
     </div>
   );
 }
