@@ -44,7 +44,7 @@ export default function Layout() {
         timeNow.getTime() > time14.getTime() &&
         timeNow.getTime() <= time1730.getTime()
       ) {
-        leakTime = timeNow.getTime() - time1730.getTime();
+        leakTime = time1730.getTime() - timeNow.getTime();
       } else {
         leakTime = 0;
       }
