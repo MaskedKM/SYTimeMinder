@@ -1,6 +1,6 @@
 import { Progress, Button } from "antd";
 import "antd/dist/antd.css";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./index.less";
 import Smile0 from "../assets/smile/smile0.jpg";
 import Smile1 from "../assets/smile/smile1.jpg";
@@ -11,11 +11,14 @@ import Smile5 from "../assets/smile/smile5.jpg";
 import Smile6 from "../assets/smile/smile6.jpg";
 import Smile7 from "../assets/smile/smile7.jpg";
 import Smile8 from "../assets/smile/smile8.jpg";
+import PlayIcon from "../assets/PlayCircle.png";
+import PauseIcon from "../assets/PauseCircle.png";
 
 export default function Layout() {
   const [time, setTime] = useState<string>();
   const [progress, setProgress] = useState<number>();
   const [smile, setSmile] = useState<string>();
+  const audioObj = useRef(new Audio());
 
   const getNewTime = () => {
     const weekDay = new Date().getDay();
@@ -89,6 +92,14 @@ export default function Layout() {
 
   setInterval(getNewTime, 1000);
 
+  useEffect(() => {
+    const audioObj = new Audio('/loser.mp3')
+    audioObj.autoplay = true
+    audioObj.muted = true
+    audioObj.volume = 1
+    audioObj.play()
+  }, []);
+
   return (
     <div className={styles.mianBox}>
       <div className={styles.Horizaontal}>
@@ -110,6 +121,11 @@ export default function Layout() {
       />
       <div>距离周末</div>
       <div className={styles.timeText}>{time}</div>
+      <img
+        src={audioObj.current.paused ? PlayIcon : PauseIcon}
+        width={20}
+        height={20}
+      />
     </div>
   );
 }
