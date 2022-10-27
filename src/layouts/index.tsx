@@ -91,16 +91,22 @@ export default function Layout() {
 
   return (
     <div className={styles.mianBox}>
-      <img
-        src={smile}
-        width={200}
-        height={200}
-        style={{ marginTop: "100px" }}
-      />
+      <div className={styles.Horizaontal}>
+        {progress === 100 ? "工作爱咋咋滴" : "工作非你不可"}
+      </div>
+      <div className={styles.topImg}>
+        <div className={styles.antitheticalCouplet}>
+          {progress === 100 ? "周末爱你" : "工作爱你"}
+        </div>
+        <img src={smile} width={180} height={180} className={styles.smileImg} />
+        <div className={styles.antitheticalCouplet}>
+          {progress === 100 ? "你爱周末" : "你爱工作"}
+        </div>
+      </div>
       <Progress
         type="dashboard"
         percent={progress}
-        style={{ marginTop: "50px" }}
+        style={{ marginTop: "30px" }}
       />
       <div>距离周末</div>
       <div className={styles.timeText}>{time}</div>
