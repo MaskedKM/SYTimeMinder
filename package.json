@@ -1,6 +1,6 @@
 {
   "private": true,
-  "author":"Masked <1344187416@qq.com>",
+  "author": "Masked <1344187416@qq.com>",
   "scripts": {
     "dev": "umi dev",
     "build": "umi build",
@@ -9,6 +9,7 @@
     "start": "npm run dev"
   },
   "dependencies": {
+    "antd": "^4.23.6",
     "umi": "^4.0.26"
   },
   "devDependencies": {
