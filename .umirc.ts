@@ -1,3 +1,4 @@
 export default {
-  npmClient: 'yarn'
+  npmClient: "yarn",
+  title: "周末提醒小助手",
 };
