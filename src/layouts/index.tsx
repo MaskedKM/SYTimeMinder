@@ -13,6 +13,7 @@ import Smile7 from "../assets/smile/smile7.jpg";
 import Smile8 from "../assets/smile/smile8.jpg";
 import PlayIcon from "../assets/PlayCircle.png";
 import PauseIcon from "../assets/PauseCircle.png";
+import request from "umi-request";
 
 export default function Layout() {
   const [time, setTime] = useState<string>();
@@ -21,18 +22,29 @@ export default function Layout() {
   const audioObj = useRef(new Audio());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
+  const [leakDay, setLeakDay] = useState(0);
+  const [workDay, setWorkDay] = useState(0);
+
+  const smileArray = [
+    Smile0,
+    Smile1,
+    Smile2,
+    Smile3,
+    Smile4,
+    Smile5,
+    Smile6,
+    Smile7,
+    Smile8,
+  ];
 
   const getNewTime = () => {
-    const weekDay = new Date().getDay();
-    let leakDay;
     let leakTime = 0;
     const timeNow = new Date();
     const time9 = new Date(new Date().setHours(9, 0, 0, 0));
     const time1145 = new Date(new Date().setHours(11, 45, 0, 0));
     const time14 = new Date(new Date().setHours(14, 0, 0, 0));
     const time1730 = new Date(new Date().setHours(17, 30, 0, 0));
-    if (weekDay > 0 && weekDay < 6) {
-      leakDay = 5 - weekDay;
+    if (leakDay > 0) {
       if (timeNow.getTime() < time9.getTime()) {
         leakTime = 22500000;
       } else if (
@@ -53,11 +65,8 @@ export default function Layout() {
       } else {
         leakTime = 0;
       }
+      leakTime += (leakDay - 1) * 22500000;
     }
-    if (leakDay) {
-      leakTime += leakDay * 22500000;
-    }
-    // const leakSec = 0;
     const leakSec = Math.floor(leakTime / 1000);
     const hour = Math.floor(leakSec / 3600);
     const min = Math.floor((leakSec - hour * 3600) / 60);
@@ -66,27 +75,19 @@ export default function Layout() {
     if (leakSec < 10) {
       fixIndex = 3;
     }
-    const tempP = Number(((1 - leakSec / 112500) * 100).toFixed(fixIndex));
+    const totalWorkTime = workDay * 22500;
+    const workTimePart = workDay * 2500;
+    const tempP = Number(
+      ((1 - leakSec / totalWorkTime) * 100).toFixed(fixIndex)
+    );
     if (leakSec === 0) {
       setSmile(Smile8);
-    } else if (leakSec > 0 && leakSec <= 12500) {
-      setSmile(Smile0);
-    } else if (leakSec > 12500 && leakSec <= 25000) {
-      setSmile(Smile1);
-    } else if (leakSec > 25000 && leakSec <= 37500) {
-      setSmile(Smile2);
-    } else if (leakSec > 37500 && leakSec <= 50000) {
-      setSmile(Smile3);
-    } else if (leakSec > 50000 && leakSec <= 62500) {
-      setSmile(Smile4);
-    } else if (leakSec > 62500 && leakSec <= 75000) {
-      setSmile(Smile5);
-    } else if (leakSec > 75000 && leakSec <= 87500) {
-      setSmile(Smile6);
-    } else if (leakSec > 87500 && leakSec <= 100000) {
-      setSmile(Smile7);
-    } else if (leakSec > 100000 && leakSec <= 112500) {
-      setSmile(Smile8);
+    } else {
+      for (let i = 0; i < 9; i++) {
+        if (leakSec > workTimePart * i && leakSec <= workTimePart * (i + 1)) {
+          setSmile(smileArray[i]);
+        }
+      }
     }
     setProgress(tempP);
     setTime(`${hour}小时${min}分钟${sec}秒`);
@@ -108,6 +109,20 @@ export default function Layout() {
           setIsModalOpen(true);
         });
     }
+  }, []);
+
+  useEffect(() => {
+    const getDayData = async () => {
+      const res1 = await request.get("/api/date/getLeakDay");
+      if (res1.code === 200) {
+        setLeakDay(res1.data);
+      }
+      const res2 = await request.get("/api/date/getWorkDay");
+      if (res2.code === 200) {
+        setWorkDay(res2.data);
+      }
+    };
+    getDayData();
   }, []);
 
   return (
