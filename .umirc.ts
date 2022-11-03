@@ -5,8 +5,8 @@ export default {
   runtimePublicPath: {},
   proxy: {
     "/api": {
-      // target: "http://39.108.64.233:8080",
-      target: "http://localhost:8080",
+      target: "http://39.108.64.233:8080",
+      // target: "http://localhost:8080",
       changeOrigin: true,
       pathRewrite: { "^/api": "" },
     },

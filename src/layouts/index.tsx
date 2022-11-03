@@ -16,7 +16,6 @@ import PauseIcon from "../assets/PauseCircle.png";
 import request from "umi-request";
 
 export default function Layout() {
-  const [time, setTime] = useState<string>();
   const [progress, setProgress] = useState<number>();
   const [smile, setSmile] = useState<string>();
   const audioObj = useRef(new Audio());
@@ -24,6 +23,9 @@ export default function Layout() {
   const [isPaused, setIsPaused] = useState(true);
   const [leakDay, setLeakDay] = useState(0);
   const [workDay, setWorkDay] = useState(0);
+  const [hourStr, setHourStr] = useState(0);
+  const [minStr, setMinStr] = useState(0);
+  const [secStr, setSecStr] = useState(0);
 
   const smileArray = [
     Smile0,
@@ -81,19 +83,34 @@ export default function Layout() {
       ((1 - leakSec / totalWorkTime) * 100).toFixed(fixIndex)
     );
     if (leakSec === 0) {
-      setSmile(Smile8);
+      if (smile !== Smile8) {
+        setSmile(Smile8);
+      }
     } else {
       for (let i = 0; i < 9; i++) {
         if (leakSec > workTimePart * i && leakSec <= workTimePart * (i + 1)) {
-          setSmile(smileArray[i]);
+          if (smile !== smileArray[i]) {
+            setSmile(smileArray[i]);
+          }
+          break;
         }
       }
     }
-    setProgress(tempP);
-    setTime(`${hour}小时${min}分钟${sec}秒`);
+    if (tempP !== progress) {
+      setProgress(tempP);
+    }
+    if (hour !== hourStr) {
+      setHourStr(hour);
+    }
+    if (min !== minStr) {
+      setMinStr(min);
+    }
+    if (sec !== secStr) {
+      setSecStr(sec);
+    }
   };
 
-  setInterval(getNewTime, 1000);
+  setInterval(getNewTime, 1010);
 
   useEffect(() => {
     audioObj.current = new Audio("/loser.mp3");
@@ -145,7 +162,9 @@ export default function Layout() {
         style={{ marginTop: "30px" }}
       />
       <div>距离周末</div>
-      <div className={styles.timeText}>{time}</div>
+      <div
+        className={styles.timeText}
+      >{`${hourStr}时${minStr}分${secStr}秒`}</div>
       <img
         src={isPaused ? PlayIcon : PauseIcon}
         width={50}
